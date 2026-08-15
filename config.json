@@ -1,0 +1,17 @@
+{
+  "quote_currency": "EUR",
+  "refresh_seconds": 2,
+  "history_minutes": 90,
+  "max_spread_pct": 1.5,
+  "early_15m_min_pct": 0.8,
+  "early_15m_max_pct": 4.0,
+  "early_1h_min_pct": 1.0,
+  "early_1h_max_pct": 6.0,
+  "max_24h_pct": 12.0,
+  "min_room_to_24h_high_pct": 3.0,
+  "volume_accel_min": 1.8,
+  "score_watch": 50,
+  "score_early": 65,
+  "score_strong": 80,
+  "log_min_score": 65
+}
