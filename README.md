@@ -1,36 +1,24 @@
-# VoltTrade Core v0.2-web
+# VoltTrade Core v0.5-consensus
 
-VoltTrade on **early-momentum scanner**, mitte "top gainers" leht. Eesmärk on märgata liikumist enne, kui tulemus on juba käes.
+Multi-exchange early-momentum prototype.
 
-## Põhimõtted
-- Kraken EUR paarid, avalik turuinfo; API võtit pole vaja.
-- Kraken WebSocket v2 ticker live-hind, bid/ask, 24h muutus, high, volume.
-- 5m / 15m / 1h muutused tekivad live-ajaloost pärast käivitamist.
-- Early-zone: 15m +0.8…4%, 1h +1…6%, 24h alla +12%.
-- 15m mahu kiirendus: siht >=1.8x võrreldes 24h keskmise 15m tempoga.
-- Eelistab BTC suhtelist tugevust, normaalset spreadi ning vähemalt 3% ruumi 24h tipuni.
-- Juba liiga kaugele liikunud vara -> EXTENDED, mitte ostusignaal.
+## Crypto engine
+- Binance: discovery layer (USDT 24h universe + direct 1m kline history for early acceleration/volume)
+- Kraken: EUR execution/validation layer (live ticker, spread, EUR liquidity, OHLC structure)
+- Coinbase: cross-market direction confirmation via public Advanced Trade ticker feed
+- Breakout age: rejects stale breakouts and prioritizes fresh ignition
+- Consensus score: separate from the single-exchange technical score
+- ENTRY requires both technical quality and multi-exchange confirmation
 
-## Score 0–100
-- Volume 25
-- Price momentum 20
-- Structure 20
-- BTC relative strength 15
-- Order-flow/spread proxy 10
-- Resistance room 10
+## UI
+- ET / EN
+- Crypto + Stocks
+- Stocks split into USA / EUROPE placeholders for separate future feeds
+- Candlestick + volume detail chart, support/resistance, exchange comparison
+- Small legal/risk footer
 
-Staatused: IGNORE <50, WATCH >=50, EARLY >=65, STRONG >=80; lisaks EXTENDED ja REJECT.
+## Railway
+Deploy from GitHub. Dockerfile binds to `$PORT` (default 8080).
 
-## Käivitamine Windowsis
-Topeltklõps `run.bat`. Seejärel ava `http://localhost:8080`.
-
-## Docker
-```bash
-docker build -t volttrade .
-docker run --rm -p 8080:8080 volttrade
-```
-
-## Oluline
-See versioon **ei tee automaatseid tehinguid**. See on scanner/otsustuskiht, mida saab valideerida €1 live-testidega. `data/signals.csv` logib EARLY/STRONG signaale, et hiljem mõõta 24h/48h/72h tulemust, hit rate'i, expectancy't ja drawdown'i.
-
-Kraken Consumeri konto-spetsiifilist ostetavust ei saa avalikust market feedist garanteerida; enne testostu tuleb token Krakeni äpis üle kontrollida.
+## Notes
+This prototype does not place trades. Exchange availability and API reachability can vary by hosting region. If Binance or Coinbase is unreachable, the source health indicator turns red and ENTRY becomes harder rather than inventing data.
