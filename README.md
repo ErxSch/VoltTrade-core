@@ -1,24 +1,57 @@
-# VoltTrade Core v0.5-consensus
+# VoltTrade Core v0.6 — Pre-Momentum
 
-Multi-exchange early-momentum prototype.
+VoltTrade v0.6 shifts the scanner from **detecting a move** to **detecting conditions that can precede a move**.
 
-## Crypto engine
-- Binance: discovery layer (USDT 24h universe + direct 1m kline history for early acceleration/volume)
-- Kraken: EUR execution/validation layer (live ticker, spread, EUR liquidity, OHLC structure)
-- Coinbase: cross-market direction confirmation via public Advanced Trade ticker feed
-- Breakout age: rejects stale breakouts and prioritizes fresh ignition
-- Consensus score: separate from the single-exchange technical score
-- ENTRY requires both technical quality and multi-exchange confirmation
+## Crypto architecture
 
-## UI
-- ET / EN
-- Crypto + Stocks
-- Stocks split into USA / EUROPE placeholders for separate future feeds
-- Candlestick + volume detail chart, support/resistance, exchange comparison
-- Small legal/risk footer
+- **Binance** — leading activity discovery: 1m candles, 5m volume acceleration, trade-count acceleration, taker-buy ratio, compression and lead/lag.
+- **Kraken** — EUR price, spread, liquidity and market structure validation.
+- **Coinbase** — independent cross-market confirmation.
+- **Catalyst Engine** — configurable RSS/Atom feeds, freshness, source tier, positive/negative catalyst classification and token matching.
 
-## Railway
-Deploy from GitHub. Dockerfile binds to `$PORT` (default 8080).
+## New leading metrics
 
-## Notes
-This prototype does not place trades. Exchange availability and API reachability can vary by hosting region. If Binance or Coinbase is unreachable, the source health indicator turns red and ENTRY becomes harder rather than inventing data.
+- Pre-Momentum Score (0–100)
+- 5m volume acceleration
+- 5m trade-count acceleration
+- 5m taker-buy ratio
+- volatility compression
+- pressure below resistance
+- Binance → Kraken lead/lag
+- catalyst score + age + source
+- negative catalyst veto/penalty
+
+## Status flow
+
+`PRE-MOMENTUM → SETUP → ENTRY WINDOW → MOMENTUM → LATE`
+
+PRE-MOMENTUM is intentionally allowed while price is still flat. A large already-realized move is not rewarded as an early signal.
+
+## Run locally
+
+```bash
+python -m pip install -r requirements.txt
+python app/server.py
+```
+
+Open http://localhost:8080
+
+## Tests
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+The included tests validate that:
+1. rising activity + flat price + catalyst produces a high pre-momentum score;
+2. a quiet market without activity stays low;
+3. a negative catalyst penalizes the score;
+4. an already-moving price is flagged as late-risk rather than treated as early.
+
+## Deployment
+
+The repository contains `Dockerfile` and `railway.json` for Railway deployment.
+
+## Important
+
+No model can know with certainty that a price will rise before the market reacts. Pre-Momentum is a probabilistic leading-signal engine and must be validated against logged outcomes before position sizes are increased.
